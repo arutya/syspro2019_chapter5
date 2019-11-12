@@ -24,6 +24,7 @@ count_max = 3
 fw = open('temp.json', 'w')
 ### directory
 list_data = OrderedDict()
+output = OrderedDict()
 
 t_fine = 0.0
 
@@ -154,18 +155,21 @@ def setup():
 
 setup()
 get_calib_param()
-
+## 動的確保する配列
+num_list = []
 
 if __name__ == '__main__':
 	try:
             while count_t < count_max:
                 readData()
-                count_loop = "id" + str(count_t)
-                output = {count_loop:list_data}
-                json.dump(output, fw, indent = 3)
+                num_list.append("id" + str(count_t))
+                output[num_list[count_t]] = list_data
+                ##json.dump(output, fw, indent = 3)
                 count_t += 1
-                output.clear()
+                ##output.clear()
                 if count_t != count_max:
-                    time.sleep(10)
+                    ## time.sllep(10)
+                    time.sleep(1)
+            json.dump(output, fw, indent = 3)
 	except KeyboardInterrupt:
 		pass
