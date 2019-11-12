@@ -164,12 +164,11 @@ if __name__ == '__main__':
                 readData()
                 num_list.append("id" + str(count_t))
                 output[num_list[count_t]] = list_data
-                ##json.dump(output, fw, indent = 3)
                 count_t += 1
                 ##output.clear()
                 if count_t != count_max:
-                    ## time.sllep(10)
-                    time.sleep(1)
+                    time.sllep(10)
+                    ##time.sleep(1)
             json.dump(output, fw, indent = 3)
 	except KeyboardInterrupt:
 		pass
