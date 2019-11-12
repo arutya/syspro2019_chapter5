@@ -2,6 +2,8 @@
 
 from smbus2 import SMBus
 import time
+import json
+from collections import OrderedDict
 
 bus_number  = 1
 i2c_address = 0x76
@@ -11,10 +13,17 @@ bus = SMBus(bus_number)
 digT = []
 digP = []
 digH = []
+## Task1
 ### loop counter
 count_t = 0
 ### loop count upper limit
 count_max = 3
+
+## Task2
+### file open 'w'
+fw = open('temp.json', 'w')
+### directory
+list_data = OrderedDict()
 
 t_fine = 0.0
 
@@ -98,6 +107,7 @@ def compensate_P(adc_P):
 	pressure = pressure + ((v1 + v2 + digP[6]) / 16.0)  
 
 	print "pressure : %7.2f hPa" % (pressure/100)
+        list_data["pres"] = pressure / 100 
 
 def compensate_T(adc_T):
 	global t_fine
@@ -105,7 +115,8 @@ def compensate_T(adc_T):
 	v2 = (adc_T / 131072.0 - digT[0] / 8192.0) * (adc_T / 131072.0 - digT[0] / 8192.0) * digT[2]
 	t_fine = v1 + v2
 	temperature = t_fine / 5120.0
-	print "temp : %-6.2f ℃" % (temperature) 
+	print "temp : %-6.2f ℃" % (temperature)
+        list_data["temp"] = temperature
 
 def compensate_H(adc_H):
 	global t_fine
@@ -120,6 +131,7 @@ def compensate_H(adc_H):
 	elif var_h < 0.0:
 		var_h = 0.0
 	print "hum : %6.2f ％" % (var_h)
+        list_data["hum"] = var_h
 
 
 def setup():
@@ -147,8 +159,13 @@ get_calib_param()
 if __name__ == '__main__':
 	try:
             while count_t < count_max:
-		readData()
-                time.sleep(10)
+                readData()
+                count_loop = "id" + str(count_t)
+                output = {count_loop:list_data}
+                json.dump(output, fw, indent = 3)
                 count_t += 1
+                output.clear()
+                if count_t != count_max:
+                    time.sleep(10)
 	except KeyboardInterrupt:
 		pass
